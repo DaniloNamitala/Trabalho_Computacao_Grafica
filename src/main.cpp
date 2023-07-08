@@ -1,6 +1,7 @@
 #include "components.hpp"
 #include "credits.hpp"
 #include "instructions.hpp"
+#include "game.hpp"
 #include <map>
 
 static int screen = 0;
@@ -80,6 +81,9 @@ void render(void) {
   {
   case 0:
     homeScreen();
+    break;
+  case 1:
+    gameScreen();
     break;
   case 2:
     creditsScreen();
