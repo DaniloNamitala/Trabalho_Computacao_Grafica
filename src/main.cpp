@@ -44,6 +44,9 @@ void change_screen(int destination) {
   mouseEvents = NULL;
   keyBoardEvents.clear();
   events_count = 0;
+  if (screen == 1) {
+    gameInit();
+  }
   glutPostRedisplay();
 }
 
@@ -135,7 +138,7 @@ void ChangeSize(GLsizei width,GLsizei height) {
   
 int main(int argc, char* argv[]) { 
   glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); 
+  glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE); 
   glutInitWindowSize (WINDOW_WIDTH, WINDOW_HEIGHT); 
   glutInitWindowPosition (100, 100); 
   glutCreateWindow("OpenGL - Linhas"); 

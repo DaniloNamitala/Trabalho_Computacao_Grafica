@@ -1,5 +1,16 @@
-#include <GL/glut.h>
-#include <GL/freeglut.h>
+
+#ifdef __APPLE__
+  #include <GLUT/glut.h>
+  #include <GLUT/freeglut.h>
+#else
+  #include <GL/glut.h>
+  #include <GL/freeglut.h>
+#endif
+#include <iostream>
+#include <vector>
+#include <ctime>
+#include <cstdlib>
+#include <cmath>
 #include "math.h"
 #include <cstring>
 #include <stdio.h>
