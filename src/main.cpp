@@ -1,79 +1,123 @@
-#include <GL/glut.h>
-#include <GL/freeglut.h>
-#include "math.h"
-#include <cstring>
-#include <stdio.h>
 #include "components.hpp"
+#include "credits.hpp"
+#include "instructions.hpp"
+#include <map>
 
-#define MARGIN 20
-#define WINDOW_WIDTH 500
-#define WINDOW_HEIGHT 500 
+static int screen = 0;
+static int actual_obj = -1;
 
-#define X_MENU (MARGIN + WINDOW_HEIGHT)
+struct mouseEvent {
+  float x1;
+  float y1;
+  float x2;
+  float y2;
+  void(*callback)();
+};
 
-#define SPACEBAR 32
-#define RETURN 13
+static int events_count = 0;
+static mouseEvent* mouseEvents;
 
-int screen = 0;
+static std::map<int, void(*)()> keyBoardEvents = std::map<int, void(*)()>();
 
-int object_count = 0;
-int actual_obj = -1;
-struct object* objects_list = NULL;
+void registerKeyboardEvent(int key, void(*callback)()) {
+  keyBoardEvents[key] = callback;
+}
 
+void registerMouseEvent(float x1, float y1, float x2, float y2, void(*callback)()) {
+  if (events_count == 0) {
+    mouseEvents = (mouseEvent*) malloc(sizeof(mouseEvent));
+  } else {
+    mouseEvents = (mouseEvent*) realloc(mouseEvents, sizeof(mouseEvent) * (events_count + 1));
+  }
+  mouseEvents[events_count].x1 = x1;
+  mouseEvents[events_count].y1 = y1;
+  mouseEvents[events_count].x2 = x2;
+  mouseEvents[events_count].y2 = y2;
+  mouseEvents[events_count].callback = callback;
+  events_count++;
+}
 
-void renderHomeScreen() {
-  float buttonH = 90;
+void change_screen(int destination) {
+  screen = destination;
+  if (mouseEvents != NULL) free(mouseEvents);
+  mouseEvents = NULL;
+  keyBoardEvents.clear();
+  events_count = 0;
+  glutPostRedisplay();
+}
+
+void homeScreen() {
+  float buttonH = 70;
   float buttonW = 300;
   
   float x = (WINDOW_WIDTH - buttonW) / 2;
-  float y = WINDOW_HEIGHT - (buttonH * 3 + 3 * MARGIN);
+  float y = WINDOW_HEIGHT - (buttonH * 4 + 4 * MARGIN);
 
-  paintCenteredString(WINDOW_WIDTH / 2 + MARGIN, y / 2, "SPACE INVASORS");
+  paintCenteredString(WINDOW_WIDTH / 2, y / 2, "SPACE INVASORS");
 
-  button(x, y, buttonW, buttonH, "START");
+  button(x, y, buttonW, buttonH, "INICIAR", []() {
+    change_screen(1);
+  });
   y += buttonH + MARGIN;
-  button(x , y, buttonW, buttonH, "CREDITS");
+  button(x , y, buttonW, buttonH, "CREDITOS", []() {
+    change_screen(2);
+  });
   y += buttonH + MARGIN;
-  button(x, y, buttonW, buttonH, "QUIT");
+  button(x, y, buttonW, buttonH, "INSTRUCOES", []() {
+    change_screen(3);
+  });
+  y += buttonH + MARGIN;
+  button(x, y, buttonW, buttonH, "SAIR", []() {
+    exit(0);
+  });
 }
-
-void renderRoom() { 
-  glClearColor(0.0f,0.0f,0.0f,0.0f); 
-  glClear(GL_COLOR_BUFFER_BIT);
-} 
 
 void render(void) {
   glClearColor(0.0f,0.0f,0.0f,0.0f); 
   glClear(GL_COLOR_BUFFER_BIT);
 
-  if (screen == 0)
-    renderHomeScreen();
-  else
-    renderRoom();
+  switch (screen)
+  {
+  case 0:
+    homeScreen();
+    break;
+  case 2:
+    creditsScreen();
+    break;
+  case 3:
+    instructionsScreen();
+    break;
+  default:
+    homeScreen();
+    break;
+  }
   glFlush(); 
 }
 
 void handleSpecialKeyboardEvents(int key, int x, int y) { 
-
+  if (keyBoardEvents.find(key) != keyBoardEvents.end()) {
+    void(*callback)() = keyBoardEvents[key];
+    callback();
+  }
 }
 
 void handleKeyboardEvents(unsigned char key, int x, int y) {
-  
-}
-
-
-void handleStartClick(int x, int y) {
-  
+  if (keyBoardEvents.find(key) != keyBoardEvents.end()) {
+    void(*callback)() = keyBoardEvents[key];
+    callback();
+  }
 }
 
 void handleMouseEvents(int button, int state, int x, int y){
     if (button == GLUT_LEFT_BUTTON){
       if (state == GLUT_UP) {
-        if (screen == 0)
-          handleStartClick(x, y);
+        for (int i = 0; i < events_count; i++) {
+          if (x >= mouseEvents[i].x1 && x <= mouseEvents[i].x2 && y >= mouseEvents[i].y1 && y <= mouseEvents[i].y2) {
+            mouseEvents[i].callback();
+          }
+        }
       }  
-    }  
-    glutPostRedisplay();
+    } 
 }
   
 void ChangeSize(GLsizei width,GLsizei height) { 
