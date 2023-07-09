@@ -21,7 +21,8 @@ static mouseEvent* mouseEvents;
 static std::map<int, void(*)()> keyBoardEvents = std::map<int, void(*)()>();
 
 void registerKeyboardEvent(int key, void(*callback)()) {
-  keyBoardEvents[key] = callback;
+  char lowerKey = std::tolower(key);
+  keyBoardEvents[lowerKey] = callback;
 }
 
 void registerMouseEvent(float x1, float y1, float x2, float y2, void(*callback)()) {
@@ -117,15 +118,17 @@ void render(void) {
 }
 
 void handleSpecialKeyboardEvents(int key, int x, int y) { 
-  if (keyBoardEvents.find(key) != keyBoardEvents.end()) {
-    void(*callback)() = keyBoardEvents[key];
+  char lowerKey = std::tolower(key);
+  if (keyBoardEvents.find(lowerKey) != keyBoardEvents.end()) {
+    void(*callback)() = keyBoardEvents[lowerKey];
     callback();
   }
 }
 
 void handleKeyboardEvents(unsigned char key, int x, int y) {
-  if (keyBoardEvents.find(key) != keyBoardEvents.end()) {
-    void(*callback)() = keyBoardEvents[key];
+  char lowerKey = std::tolower(key);
+  if (keyBoardEvents.find(lowerKey) != keyBoardEvents.end()) {
+    void(*callback)() = keyBoardEvents[lowerKey];
     callback();
   }
 }
