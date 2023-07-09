@@ -38,14 +38,29 @@ void registerMouseEvent(float x1, float y1, float x2, float y2, void(*callback)(
   events_count++;
 }
 
+void init() {
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, 1);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+}
+
 void change_screen(int destination) {
   screen = destination;
   if (mouseEvents != NULL) free(mouseEvents);
   mouseEvents = NULL;
   keyBoardEvents.clear();
   events_count = 0;
-  if (screen == 1) {
+  switch (screen) {
+  case 0:
+    init();
+    break;
+  case 1:
     gameInit();
+    break;
+  default:
+    break;
   }
   glutPostRedisplay();
 }
@@ -117,7 +132,7 @@ void handleKeyboardEvents(unsigned char key, int x, int y) {
 
 void handleMouseEvents(int button, int state, int x, int y){
     if (button == GLUT_LEFT_BUTTON){
-      if (state == GLUT_UP) {
+      if (state == GLUT_DOWN && mouseEvents != NULL) {
         for (int i = 0; i < events_count; i++) {
           if (x >= mouseEvents[i].x1 && x <= mouseEvents[i].x2 && y >= mouseEvents[i].y1 && y <= mouseEvents[i].y2) {
             mouseEvents[i].callback();
