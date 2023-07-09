@@ -26,6 +26,12 @@ void registerKeyboardEvent(int key, void(*callback)()) {
 }
 
 void registerMouseEvent(float x1, float y1, float x2, float y2, void(*callback)()) {
+  for (int i = 0; i < events_count; i++) {
+    if (mouseEvents[i].x1 == x1 && mouseEvents[i].y1 == y1 && mouseEvents[i].x2 == x2 && mouseEvents[i].y2 == y2) {
+      mouseEvents[i].callback = callback;
+      return;
+    }
+  }
   if (events_count == 0) {
     mouseEvents = (mouseEvent*) malloc(sizeof(mouseEvent));
   } else {
@@ -47,12 +53,7 @@ void init() {
   glLoadIdentity();
 }
 
-void change_screen(int destination) {
-  screen = destination;
-  if (mouseEvents != NULL) free(mouseEvents);
-  mouseEvents = NULL;
-  keyBoardEvents.clear();
-  events_count = 0;
+void initScreen() {
   switch (screen) {
   case 0:
     init();
@@ -60,9 +61,25 @@ void change_screen(int destination) {
   case 1:
     gameInit();
     break;
+  case 2:
+    creditsInit();
+    break;
+  case 3:
+    instructionsInit();
+    break;
   default:
+    init();
     break;
   }
+}
+
+void change_screen(int destination) {
+  screen = destination;
+  if (mouseEvents != NULL) free(mouseEvents);
+  mouseEvents = NULL;
+  keyBoardEvents.clear();
+  events_count = 0;
+  initScreen();
   glutPostRedisplay();
 }
 
@@ -159,7 +176,7 @@ int main(int argc, char* argv[]) {
   glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE); 
   glutInitWindowSize (WINDOW_WIDTH, WINDOW_HEIGHT); 
   glutInitWindowPosition (100, 100); 
-  glutCreateWindow("OpenGL - Linhas"); 
+  glutCreateWindow("OpenGL - SPACE INVASORS"); 
   glutDisplayFunc(render);
   glutReshapeFunc(ChangeSize); 
   glutMouseFunc(handleMouseEvents);

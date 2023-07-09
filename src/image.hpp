@@ -42,18 +42,22 @@ GLuint loadTexture(const char* filename) {
     return texture_id;
 }
 
-void paintImage(float center_x, float center_y, float width, float height, GLuint texture_id) {
+void paintImage(float center_x, float center_y, float width, float height, GLuint texture_id, int rotation = 0) {
     glBindTexture(GL_TEXTURE_2D, texture_id);
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f); 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.5f);
 
-    float left = center_x - width / 2.0f;
-    float right = center_x + width / 2.0f;
-    float bottom = center_y - height / 2.0f;
-    float top = center_y + height / 2.0f;
+    float left = - width / 2.0f;
+    float right = width / 2.0f;
+    float bottom = - height / 2.0f;
+    float top = height / 2.0f;
 
+    glPushMatrix();
+    glTranslatef(center_x, center_y, 0.0f);
+    glRotatef(rotation, 0.0f, 0.0f, 1.0f);
+  
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 1.0f);
     glVertex2f(left, bottom);
@@ -64,6 +68,8 @@ void paintImage(float center_x, float center_y, float width, float height, GLuin
     glTexCoord2f(0.0f, 0.0f);
     glVertex2f(left, top);
     glEnd();
+    
+    glPopMatrix();
 
     glDisable(GL_ALPHA_TEST);
     glDisable(GL_TEXTURE_2D);

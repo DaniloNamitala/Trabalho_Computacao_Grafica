@@ -1,12 +1,14 @@
 #include "components.hpp"
 
-void instructionsScreen() {
-  glClearColor(0.0f,0.0f,0.0f,0.0f); 
-  glClear(GL_COLOR_BUFFER_BIT);
-
+void instructionsInit() {
   registerKeyboardEvent(ESCAPE_KEY, []() {
     change_screen(0);
   });
+}
+
+void instructionsScreen() {
+  glClearColor(0.0f,0.0f,0.0f,0.0f); 
+  glClear(GL_COLOR_BUFFER_BIT);
 
   float textH = glutBitmapHeight(GLUT_BITMAP_TIMES_ROMAN_24);
   float x = (WINDOW_WIDTH) / 2;

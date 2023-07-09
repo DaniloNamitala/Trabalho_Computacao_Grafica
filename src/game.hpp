@@ -3,6 +3,8 @@
 
 bool game_stop = false;
 
+int helice_angle = 0;
+GLuint helice_texture_id;
 struct entity {
     float x = 0.0f;
     float y = 1.0f;
@@ -24,7 +26,10 @@ GLuint default_enemy_texture_id;
 int menuID;
 
 void drawPlayer() {
-    paintImage(player.x, player.y, 0.2f, 0.2f, player.texture_id);
+    helice_angle += 10.0f;
+    helice_angle %= 360;
+    paintImage(player.x, player.y, 0.15f, 0.4f, player.texture_id);
+    paintImage(player.x-0.01, player.y+0.08, 0.4f, 0.4f, helice_texture_id, -helice_angle);
 }
 
 void drawEnemies() {
@@ -169,6 +174,7 @@ void initialize_data() {
     player.speed = 0.1f;
     player.lives = 3;
     player.texture_id = loadTexture("res/helicoptero.png");
+    helice_texture_id = loadTexture("res/helice.png");
     default_enemy_texture_id = loadTexture("res/inimigo1.png");
     enemies.clear();
     shots.clear();
