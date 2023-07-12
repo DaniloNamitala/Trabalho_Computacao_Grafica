@@ -3,6 +3,9 @@
 
 bool game_stop = false;
 
+GLuint fundo_texture_id;
+GLuint life_texture_id;
+
 int helice_angle = 0;
 GLuint helice_texture_id;
 struct entity {
@@ -13,7 +16,6 @@ struct entity {
     GLint texture_id;
 };
 
-GLuint fundo_texture_id;
 bool player_light = false;
 bool world_light = true;
 
@@ -40,6 +42,19 @@ void drawPlayer() {
     paintImage(player.x, player.y, 0.15f, 0.4f, player.texture_id);
     paintImage(player.x-0.01, player.y+0.08, 0.4f, 0.4f, helice_texture_id, -helice_angle);
 }
+
+// desenha a vidas disponíveis do jogador
+void drawLife() {
+    paintImage(-0.9, 0.9, 0.1f, 0.1f, life_texture_id);
+    float iconSize = 0.1f;
+    float spacing = 0.05f;
+    
+    for (int i = 0; i < player.lives - 1; i++) {
+        float xPos = -0.9f + (iconSize + spacing) * (i + 1);
+        paintImage(xPos, 0.9, iconSize, iconSize, life_texture_id);
+    }
+}
+
 
 void drawEnemies() {
     for (auto &enemy : enemies) {
@@ -182,6 +197,7 @@ void gameScreen() {
     drawEnemies();
     drawShots();
     set_light(player.x, player.y, 0.2, player.x, 0.8, 0.0, 20);
+    drawLife();
 }
 
 void stop_game() {
@@ -221,6 +237,14 @@ void tick(int value) {
         }
     }
 
+    for (auto &enemy : enemies) {
+        float distance = enemy.y - (-1);
+        if (distance <= 0){
+            player.lives--;
+            std::cout <<"-1 vida";
+        }
+    }
+
     for (int i = 0; i < enemies.size(); i++) {
         if (enemies.at(i).lives <= 0) {
             enemies.erase(enemies.begin() + i);
@@ -245,6 +269,7 @@ void initialize_data() {
     helice_texture_id = loadTexture("res/helice.png");
     default_enemy_texture_id = loadTexture("res/inimigo1.png");
     fundo_texture_id = loadTexture("res/fundo.png");
+    life_texture_id = loadTexture("res/vida.png");
     enemies.clear();
     shots.clear();
 }
