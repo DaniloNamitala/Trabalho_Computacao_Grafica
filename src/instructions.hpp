@@ -18,7 +18,7 @@ void instructionsScreen() {
 
   paintCenteredString(x, y, "Utilize as teclas W, A, S, D para mover a nave.");
   y += textH + MARGIN;
-  paintCenteredString(x , y, "Utilize a tecla ESPAÇO para atirar.");
+  paintCenteredString(x , y, "Utilize a tecla ESPACO para atirar.");
   y += textH + MARGIN;
   paintCenteredString(x, y, "Utilize a tecla F para usar a luz.");
   y += textH + MARGIN;
