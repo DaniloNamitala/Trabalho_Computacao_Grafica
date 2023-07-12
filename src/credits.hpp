@@ -18,7 +18,7 @@ void creditsScreen() {
 
   paintCenteredString(x, y, "Danilo Aparecido Namitala");
   y += textH + MARGIN;
-  paintCenteredString(x , y, "Tulio Cruz");
+  paintCenteredString(x , y, "Tulio Oliveira Cruz");
   y += textH + MARGIN;
   paintCenteredString(x, y, "Lislaila Tarsila Pereira");
   y += textH + MARGIN;

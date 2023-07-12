@@ -13,6 +13,8 @@ struct entity {
     GLint texture_id;
 };
 
+GLuint fundo_texture_id;
+
 entity player;
 const int maxShots = 5;
 typedef std::pair<float, float> FloatPair;
@@ -24,6 +26,11 @@ GLuint default_enemy_texture_id;
 
 // Menu
 int menuID;
+
+// desenha o fundo do jogo
+void drawWallpaper() {
+    paintImage(0.0, 0.0, 2, 2, fundo_texture_id);
+}
 
 void drawPlayer() {
     helice_angle += 10.0f;
@@ -111,6 +118,7 @@ void gameScreen() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    drawWallpaper();
     drawPlayer();
     drawEnemies();
     drawShots();
@@ -176,6 +184,7 @@ void initialize_data() {
     player.texture_id = loadTexture("res/helicoptero.png");
     helice_texture_id = loadTexture("res/helice.png");
     default_enemy_texture_id = loadTexture("res/inimigo1.png");
+    fundo_texture_id = loadTexture("res/fundo.png");
     enemies.clear();
     shots.clear();
 }
