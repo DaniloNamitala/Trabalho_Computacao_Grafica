@@ -1,6 +1,6 @@
 ## Trabalho de Computação Gráfica
 
->Trabalho realizado para disciplina de Computação Gráfica - GAC104.
+>Trabalho final realizado para disciplina de Computação Gráfica - GAC104.
 
 **Integrantes**
 - Danilo Aparecido Namitala.
