@@ -14,6 +14,8 @@ struct entity {
 };
 
 GLuint fundo_texture_id;
+bool player_light = false;
+bool world_light = true;
 
 entity player;
 const int maxShots = 5;
@@ -45,7 +47,7 @@ void drawEnemies() {
         float enemyY = enemy.y;
         float enemyWidth = 0.2f;
         float enemyHeight = 0.2f;
-        paintImage(enemyX, enemyY, enemyWidth, enemyHeight, enemy.texture_id);
+        paintImage(enemyX, enemyY, enemyWidth, enemyHeight, enemy.texture_id, 180);
     }
 }
 
@@ -110,17 +112,76 @@ void registerkeyEvents() {
     registerKeyboardEvent(ESCAPE_KEY, []() {
         change_screen(0);
     });
+    registerKeyboardEvent('f', []() {
+        player_light = !player_light;
+    });
+    registerKeyboardEvent('l', []() {
+        world_light = !world_light;
+        if (world_light)
+            glEnable(GL_LIGHTING);
+        else
+            glDisable(GL_LIGHTING);
+    });
+}
+
+
+void set_main_light() {
+    GLfloat light0_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
+    GLfloat light0_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat light0_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat light0_position[] = { 0.0, 0.0, 1.0, 1.0 };
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular);
+    glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+
+    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 2.0);
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 1.0);
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.5);
+
+    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 2.0);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
+}
+
+void set_light(float x, float y, float z, float xt, float yt, float zt, float angle) {
+   glDisable(GL_LIGHT1);
+   if (!player_light) return;
+   
+   GLfloat light_position[] = { x, y, z, 1.0 };
+   GLfloat light_direction[] = { xt - x, yt - y, zt - z, 0.0 };
+   GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
+   GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+   glLightfv(GL_LIGHT1 , GL_AMBIENT, light_ambient);
+   glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+   glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+   glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light_direction);
+   glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, angle);
+
+   
+   glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1);
+   glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.0);
+   glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0);
+   glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
+
+   glEnable(GL_LIGHT0 + 1);
+   glEnable(GL_DEPTH_TEST);
 }
 
 void gameScreen() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_BLEND);
+    
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
     drawWallpaper();
     drawPlayer();
     drawEnemies();
     drawShots();
+    set_light(player.x, player.y, 0.2, player.x, 0.8, 0.0, 20);
 }
 
 void stop_game() {
@@ -210,11 +271,14 @@ void createMenu() {
 void gameInit() {
     initialize_data();
     registerkeyEvents();
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
+    
     glLoadIdentity();
+    set_main_light();
     glEnable(GL_TEXTURE_2D);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
