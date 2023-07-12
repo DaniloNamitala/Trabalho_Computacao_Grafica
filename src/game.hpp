@@ -46,7 +46,6 @@ void drawEnemies() {
         float enemyWidth = 0.2f;
         float enemyHeight = 0.2f;
         paintImage(enemyX, enemyY, enemyWidth, enemyHeight, enemy.texture_id);
-        paintString(enemyX - enemyWidth / 2.0f, enemyY - enemyHeight / 2.0f, std::to_string(enemy.lives).c_str());
     }
 }
 
