@@ -230,6 +230,7 @@ void gameScreen() {
 }
 
 void stop_game() {
+    glDisable(GL_LIGHTING);
     glutDetachMenu(GLUT_RIGHT_BUTTON);
 }
 
@@ -288,6 +289,7 @@ void tick(int value) {
 }
 
 void initialize_data() {
+    points = 0;
     ticks = 0;
     game_stop = false;
     game_over = false;

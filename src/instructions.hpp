@@ -20,7 +20,7 @@ void instructionsScreen() {
   y += textH + MARGIN;
   paintCenteredString(x , y, "Utilize a tecla ESPACO para atirar.");
   y += textH + MARGIN;
-  paintCenteredString(x, y, "Utilize a tecla F para usar a luz.");
+  paintCenteredString(x, y, "Utilize as teclas F e L para usar a luz.");
   y += textH + MARGIN;
   paintCenteredString(x, y, "Utilize a tecla ESC para voltar ao menu.");
 }
