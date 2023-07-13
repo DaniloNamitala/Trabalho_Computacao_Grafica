@@ -11,5 +11,5 @@
 **Instruçoes para o jogo**
 - Utilize as teclas W, A, S, D para mover a nave.
 - Utilize a tecla ESPACO para atirar.
-- Utilize a tecla F para usar a luz.
+- Utilize as tecla F e L para usar a luz.
 - Utilize a tecla ESC para voltar ao menu.
