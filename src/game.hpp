@@ -2,6 +2,7 @@
 #include "image.hpp"
 
 bool game_stop = false;
+bool game_over = false;
 
 GLuint fundo_texture_id;
 GLuint life_texture_id;
@@ -23,6 +24,7 @@ entity player;
 const int maxShots = 5;
 typedef std::pair<float, float> FloatPair;
 std::vector<FloatPair> shots;
+int points = 0;
 
 int maxEnemies = 4;
 std::vector<entity> enemies;
@@ -45,12 +47,11 @@ void drawPlayer() {
 
 // desenha a vidas disponíveis do jogador
 void drawLife() {
-    paintImage(-0.9, 0.9, 0.1f, 0.1f, life_texture_id);
     float iconSize = 0.1f;
     float spacing = 0.05f;
     
-    for (int i = 0; i < player.lives - 1; i++) {
-        float xPos = -0.9f + (iconSize + spacing) * (i + 1);
+    for (int i = 0; i < player.lives; i++) {
+        float xPos = -0.9f + (iconSize + spacing) * (i);
         paintImage(xPos, 0.9, iconSize, iconSize, life_texture_id);
     }
 }
@@ -125,6 +126,7 @@ void registerkeyEvents() {
         }
     });
     registerKeyboardEvent(ESCAPE_KEY, []() {
+        game_stop = true;
         change_screen(0);
     });
     registerKeyboardEvent('f', []() {
@@ -186,6 +188,29 @@ void set_light(float x, float y, float z, float xt, float yt, float zt, float an
    glEnable(GL_DEPTH_TEST);
 }
 
+void drawGameOver() {
+    gluOrtho2D(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+    paintCenteredString(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, "GAME OVER");
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+}
+
+void drawPoints() {
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    paintStringAlignTopRight(WINDOW_WIDTH - 5, 5, ("PONTOS: " + std::to_string(points)).c_str());
+    
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
 void gameScreen() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -198,6 +223,10 @@ void gameScreen() {
     drawShots();
     set_light(player.x, player.y, 0.2, player.x, 0.8, 0.0, 20);
     drawLife();
+    drawPoints();
+    if (game_over) {
+        drawGameOver();
+    }
 }
 
 void stop_game() {
@@ -208,16 +237,23 @@ static unsigned long ticks = 0;
 void tick(int value) {
     ticks++;
 
-    if (ticks % 50 == 0) { // cria um inimigo a cada 50 ticks
+    if (ticks % 100 == 0) { // cria um inimigo a cada 50 ticks
         create_enemies();
     }
 
     for (auto &enemy : enemies) { // atualiza a posicao dos inimigos
         enemy.y -= enemy.speed;
         if (enemy.y < -1.0f) {
+            player.lives--;
             enemy.y = 1.0f;
+            enemy.lives = (std::rand() % 8) + 1;
             enemy.x = static_cast<float>(std::rand()) / RAND_MAX * 2.0f - 1.0f;
         }
+    }
+
+    if (player.lives <= 0) {
+        game_stop = true;
+        game_over = true;
     }
 
     for(int i = 0; i < shots.size(); i++) { // atualiza a posicao dos tiros
@@ -237,17 +273,10 @@ void tick(int value) {
         }
     }
 
-    for (auto &enemy : enemies) {
-        float distance = enemy.y - (-1);
-        if (distance <= 0){
-            player.lives--;
-            std::cout <<"-1 vida";
-        }
-    }
-
     for (int i = 0; i < enemies.size(); i++) {
         if (enemies.at(i).lives <= 0) {
             enemies.erase(enemies.begin() + i);
+            points += 50;
         }
     }
 
@@ -261,6 +290,7 @@ void tick(int value) {
 void initialize_data() {
     ticks = 0;
     game_stop = false;
+    game_over = false;
     player.x = 0.0f;
     player.y = -0.5f;
     player.speed = 0.1f;
@@ -301,8 +331,8 @@ void gameInit() {
     glLoadIdentity();
     gluOrtho2D(-1.0, 1.0, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
-    
     glLoadIdentity();
+
     set_main_light();
     glEnable(GL_TEXTURE_2D);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

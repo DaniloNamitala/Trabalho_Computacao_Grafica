@@ -29,6 +29,17 @@ void paintString(float x, float y, const char* string) {
   glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)string);
 }
 
+void paintStringAlignTopRight(float x, float y, const char* string) {  
+  glColor3f(1, 1, 1); 
+  float fontH = glutBitmapHeight(GLUT_BITMAP_TIMES_ROMAN_24);
+  float wordW = 0; 
+  for (char* c = (char*) string; *c != '\0'; c++) {
+    wordW += glutBitmapWidth(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+  }
+  glRasterPos2f(x - wordW, y + fontH);
+  glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)string);
+}
+
 void paintCenteredString(float x, float y, const char* string) {  
   glColor3f(1, 1, 1); 
   float fontH = glutBitmapHeight(GLUT_BITMAP_TIMES_ROMAN_24);
